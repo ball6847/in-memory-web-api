@@ -4,7 +4,8 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import {
   HttpBackend,
-  HttpEvent, HttpEventType,
+  HttpEvent,
+  HttpEventType,
   HttpHandler,
   HttpInterceptor,
   HTTP_INTERCEPTORS,
@@ -12,7 +13,7 @@ import {
   HttpResponse
 } from '@angular/common/http';
 
-import { Observable, zip} from 'rxjs';
+import { Observable, zip } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 
 import { failure } from '../testing';
@@ -28,7 +29,10 @@ import { HeroInMemDataService } from '../app/hero-in-mem-data.service';
 import { HeroInMemDataOverrideService } from '../app/hero-in-mem-data-override.service';
 import { HeroServiceCoreSpec } from '../app/hero.service.spec';
 
-class Nobody { id: string; name: string; }
+class Nobody {
+  id: string;
+  name: string;
+}
 
 /**
  * Test interceptor adds a request header and a response header
@@ -36,8 +40,7 @@ class Nobody { id: string; name: string; }
 @Injectable()
 export class TestHeaderInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
-    const reqClone = req.clone({setHeaders: {'x-test-req': 'req-test-header'}});
+    const reqClone = req.clone({ setHeaders: { 'x-test-req': 'req-test-header' } });
 
     return next.handle(reqClone).pipe(
       map(event => {
@@ -52,14 +55,12 @@ export class TestHeaderInterceptor implements HttpInterceptor {
   }
 }
 
-type Data = { data: any }
+type Data = { data: any };
 
 describe('HttpClient Backend Service', () => {
-
   const delay = 1; // some minimal simulated latency delay
 
   describe('raw Angular HttpClient', () => {
-
     let http: HttpClient;
 
     beforeEach(() => {
@@ -74,14 +75,10 @@ describe('HttpClient Backend Service', () => {
     });
 
     it('can get heroes', async(() => {
-      http.get<Hero[]>('api/heroes')
-      .subscribe(
-        heroes => {
-          // console.log(heroes);
-          expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-        },
-        failure
-      );
+      http.get<Hero[]>('api/heroes').subscribe(heroes => {
+        // console.log(heroes);
+        expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+      }, failure);
     }));
 
     it('GET should be a "cold" observable', async(() => {
@@ -94,26 +91,20 @@ describe('HttpClient Backend Service', () => {
       // spy on `collectionHandler` should not be called before subscribe
       expect(spy).not.toHaveBeenCalled();
 
-      get$.subscribe(
-        heroes => {
-          expect(spy).toHaveBeenCalled();
-          expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-        },
-        failure
-      );
+      get$.subscribe(heroes => {
+        expect(spy).toHaveBeenCalled();
+        expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+      }, failure);
     }));
 
     it('GET should wait until after delay to respond', async(() => {
       // to make test fail, set `delay=0` above
       let gotResponse = false;
 
-      http.get<Hero[]>('api/heroes').subscribe(
-        heroes => {
-          gotResponse = true;
-          expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-        },
-        failure
-      );
+      http.get<Hero[]>('api/heroes').subscribe(heroes => {
+        gotResponse = true;
+        expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+      }, failure);
 
       expect(gotResponse).toBe(false, 'should delay before response');
     }));
@@ -136,14 +127,10 @@ describe('HttpClient Backend Service', () => {
     }));
 
     it('can get heroes (w/ a different base path)', async(() => {
-      http.get<Hero[]>('some-base-path/heroes')
-      .subscribe(
-        heroes => {
-          // console.log(heroes);
-          expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-        },
-        failure
-      );
+      http.get<Hero[]>('some-base-path/heroes').subscribe(heroes => {
+        // console.log(heroes);
+        expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+      }, failure);
     }));
 
     it('should 404 when GET unknown collection (after delay)', async(() => {
@@ -164,60 +151,39 @@ describe('HttpClient Backend Service', () => {
     }));
 
     it('should return the hero w/id=1 for GET app/heroes/1', async(() => {
-      http.get<Hero>('api/heroes/1')
-      .subscribe(
-        hero => {
-          expect(hero).toBeDefined('should find hero with id=1');
-        },
-        failure
-      );
+      http.get<Hero>('api/heroes/1').subscribe(hero => {
+        expect(hero).toBeDefined('should find hero with id=1');
+      }, failure);
     }));
 
     // test where id is string that looks like a number
     it('should return the stringer w/id="10" for GET app/stringers/10', async(() => {
-      http.get<Hero>('api/stringers/10')
-      .subscribe(
-        hero => {
-          expect(hero).toBeDefined('should find string with id="10"');
-        },
-        failure
-      );
+      http.get<Hero>('api/stringers/10').subscribe(hero => {
+        expect(hero).toBeDefined('should find string with id="10"');
+      }, failure);
     }));
 
     it('should return 1-item array for GET app/heroes/?id=1', async(() => {
-      http.get<Hero[]>('api/heroes/?id=1')
-      .subscribe(
-        heroes => {
-          expect(heroes.length).toBe(1, 'should find one hero w/id=1');
-        },
-        failure
-      );
+      http.get<Hero[]>('api/heroes/?id=1').subscribe(heroes => {
+        expect(heroes.length).toBe(1, 'should find one hero w/id=1');
+      }, failure);
     }));
 
     it('should return 1-item array for GET app/heroes?id=1', async(() => {
-      http.get<Hero[]>('api/heroes?id=1')
-      .subscribe(
-        heroes => {
-          expect(heroes.length).toBe(1, 'should find one hero w/id=1');
-        },
-        failure
-      );
+      http.get<Hero[]>('api/heroes?id=1').subscribe(heroes => {
+        expect(heroes.length).toBe(1, 'should find one hero w/id=1');
+      }, failure);
     }));
 
     it('should return undefined for GET app/heroes?id=not-found-id', async(() => {
-      http.get<Hero[]>('api/heroes?id=123456')
-      .subscribe(
-        heroes => {
-          expect(heroes.length).toBe(0);
-        },
-        failure
-      );
+      http.get<Hero[]>('api/heroes?id=123456').subscribe(heroes => {
+        expect(heroes.length).toBe(0);
+      }, failure);
     }));
 
     it('should return 404 for GET app/heroes/not-found-id', async(() => {
       const url = 'api/heroes/123456';
-      http.get<Hero[]>(url)
-      .subscribe(
+      http.get<Hero[]>(url).subscribe(
         _ => {
           console.log(_);
           fail(`should not have found data for '${url}'`);
@@ -230,46 +196,33 @@ describe('HttpClient Backend Service', () => {
 
     it('can generate the id when add a hero with no id', async(() => {
       const hero = new Hero(null, 'SuperDooper');
-      http.post<Hero>('api/heroes', hero)
-        .subscribe(
-          replyHero => {
-            expect(replyHero.id).toBeTruthy('added hero should have an id');
-            expect(replyHero).not.toBe(hero,
-              'reply hero should not be the request hero');
-          },
-          failure
-        );
+      http.post<Hero>('api/heroes', hero).subscribe(replyHero => {
+        expect(replyHero.id).toBeTruthy('added hero should have an id');
+        expect(replyHero).not.toBe(hero, 'reply hero should not be the request hero');
+      }, failure);
     }));
 
     it('can get nobodies (empty collection)', async(() => {
-      http.get<Hero[]>('api/nobodies')
-      .subscribe(
-        nobodies => {
-          expect(nobodies.length).toBe(0, 'should have no nobodies');
-        },
-        failure
-      );
+      http.get<Hero[]>('api/nobodies').subscribe(nobodies => {
+        expect(nobodies.length).toBe(0, 'should have no nobodies');
+      }, failure);
     }));
 
     it('can add a nobody with an id to empty nobodies collection', async(() => {
-
       const id = 'g-u-i-d';
 
-      http.post('api/nobodies', { id, name: 'Noman' }).pipe(
-        concatMap(() => http.get<Nobody[]>('api/nobodies'))
-      ).subscribe(
-          nobodies => {
-            expect(nobodies.length).toBe(1, 'should a nobody');
-            expect(nobodies[0].name).toBe('Noman', 'should be "Noman"');
-            expect(nobodies[0].id).toBe(id, 'should preserve the submitted, ' + id);
-          },
-          failure
-        );
+      http
+        .post('api/nobodies', { id, name: 'Noman' })
+        .pipe(concatMap(() => http.get<Nobody[]>('api/nobodies')))
+        .subscribe(nobodies => {
+          expect(nobodies.length).toBe(1, 'should a nobody');
+          expect(nobodies[0].name).toBe('Noman', 'should be "Noman"');
+          expect(nobodies[0].id).toBe(id, 'should preserve the submitted, ' + id);
+        }, failure);
     }));
 
     it('should fail when add a nobody without an id to empty nobodies collection', async(() => {
-      http.post('api/nobodies', { name: 'Noman' })
-        .subscribe(
+      http.post('api/nobodies', { name: 'Noman' }).subscribe(
         _ => {
           console.log(_);
           fail(`should not have been able to add 'Norman' to 'nobodies'`);
@@ -277,7 +230,8 @@ describe('HttpClient Backend Service', () => {
         err => {
           expect(err.status).toBe(422, 'should have 422 status');
           expect(err.body.error).toContain('id type is non-numeric');
-        });
+        }
+      );
     }));
 
     describe('can reset the database', () => {
@@ -296,28 +250,27 @@ describe('HttpClient Backend Service', () => {
         ).pipe(
           map(([h, n, s]) => {
             return {
-              heroes:    h.length as number,
-              nobodies:  n.length as number,
+              heroes: h.length as number,
+              nobodies: n.length as number,
               stringers: s.length as number
             };
           })
         );
 
         // Add a nobody so that we have one
-        http.post('api/nobodies', { id: 42, name: 'Noman' }).pipe(
-          // Reset database with "clear" option
-          concatMap(() => http.post('commands/resetDb',
-            { clear: true, returnType })),
-          // get the number of heroes and nobodies
-          concatMap(() => sizes$)
-        ).subscribe(
-          sizes => {
+        http
+          .post('api/nobodies', { id: 42, name: 'Noman' })
+          .pipe(
+            // Reset database with "clear" option
+            concatMap(() => http.post('commands/resetDb', { clear: true, returnType })),
+            // get the number of heroes and nobodies
+            concatMap(() => sizes$)
+          )
+          .subscribe(sizes => {
             expect(sizes.heroes).toBe(0, 'reset should have cleared the heroes');
             expect(sizes.nobodies).toBe(0, 'reset should have cleared the nobodies');
             expect(sizes.stringers).toBe(0, 'reset should have cleared the stringers');
-          },
-          failure
-        );
+          }, failure);
       }
     });
   });
@@ -325,7 +278,6 @@ describe('HttpClient Backend Service', () => {
   ////////////////
 
   describe('raw Angular HttpClient w/ override service', () => {
-
     let http: HttpClient;
 
     beforeEach(() => {
@@ -340,42 +292,29 @@ describe('HttpClient Backend Service', () => {
     });
 
     it('can get heroes', async(() => {
-      http.get<Hero[]>('api/heroes')
-      .subscribe(
-        heroes => {
-          // console.log(heroes);
-          expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-        },
-        failure
-      );
+      http.get<Hero[]>('api/heroes').subscribe(heroes => {
+        // console.log(heroes);
+        expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+      }, failure);
     }));
 
     it('can translate `foo/heroes` to `heroes` via `parsedRequestUrl` override', async(() => {
-      http.get<Hero[]>('api/foo/heroes')
-      .subscribe(
-        heroes => {
-          // console.log(heroes);
-          expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-        },
-        failure
-      );
+      http.get<Hero[]>('api/foo/heroes').subscribe(heroes => {
+        // console.log(heroes);
+        expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+      }, failure);
     }));
 
     it('can get villains', async(() => {
-      http.get<Hero[]>('api/villains')
-      .subscribe(
-        villains => {
-          // console.log(villains);
-          expect(villains.length).toBeGreaterThan(0, 'should have villains');
-        },
-        failure
-      );
+      http.get<Hero[]>('api/villains').subscribe(villains => {
+        // console.log(villains);
+        expect(villains.length).toBeGreaterThan(0, 'should have villains');
+      }, failure);
     }));
 
     it('should 404 when POST to villains', async(() => {
       const url = 'api/villains';
-      http.post<Hero[]>(url, {id: 42, name: 'Dr. Evil'})
-      .subscribe(
+      http.post<Hero[]>(url, { id: 42, name: 'Dr. Evil' }).subscribe(
         _ => {
           console.log(_);
           fail(`should not have POSTed data for '${url}'`);
@@ -388,8 +327,7 @@ describe('HttpClient Backend Service', () => {
 
     it('should 404 when GET unknown collection', async(() => {
       const url = 'api/unknown-collection';
-      http.get<Hero[]>(url)
-      .subscribe(
+      http.get<Hero[]>(url).subscribe(
         _ => {
           console.log(_);
           fail(`should not have found data for '${url}'`);
@@ -401,29 +339,25 @@ describe('HttpClient Backend Service', () => {
     }));
 
     it('should use genId override to add new hero, "Maxinius"', async(() => {
-      http.post('api/heroes', { name: 'Maxinius' }).pipe(
-        concatMap(() => http.get<Hero[]>('api/heroes?name=Maxi'))
-      ).subscribe(
-        heroes => {
+      http
+        .post('api/heroes', { name: 'Maxinius' })
+        .pipe(concatMap(() => http.get<Hero[]>('api/heroes?name=Maxi')))
+        .subscribe(heroes => {
           expect(heroes.length).toBe(1, 'should have found "Maxinius"');
           expect(heroes[0].name).toBe('Maxinius');
           expect(heroes[0].id).toBeGreaterThan(1000);
-        },
-        failure
-      );
+        }, failure);
     }));
 
     it('should use genId override guid generator for a new nobody without an id', async(() => {
-      http.post('api/nobodies', { name: 'Noman' }).pipe(
-        concatMap(() => http.get<Nobody[]>('api/nobodies'))
-      ).subscribe(
-          nobodies => {
-            expect(nobodies.length).toBe(1, 'should a nobody');
-            expect(nobodies[0].name).toBe('Noman', 'should be "Noman"');
-            expect(typeof nobodies[0].id).toBe('string', 'should create a string (guid) id');
-          },
-          failure
-        );
+      http
+        .post('api/nobodies', { name: 'Noman' })
+        .pipe(concatMap(() => http.get<Nobody[]>('api/nobodies')))
+        .subscribe(nobodies => {
+          expect(nobodies.length).toBe(1, 'should a nobody');
+          expect(nobodies[0].name).toBe('Noman', 'should be "Noman"');
+          expect(typeof nobodies[0].id).toBe('string', 'should create a string (guid) id');
+        }, failure);
     }));
 
     describe('can reset the database', () => {
@@ -441,31 +375,31 @@ describe('HttpClient Backend Service', () => {
           http.get<Hero[]>('api/stringers'),
           http.get<Hero[]>('api/villains')
         ).pipe(
-            map(([h, n, s, v]) => {
-              return {
-                heroes:    h.length as number,
-                nobodies:  n.length as number,
-                stringers: s.length as number,
-                villains:  v.length as number
-              };
-            })
-          );
+          map(([h, n, s, v]) => {
+            return {
+              heroes: h.length as number,
+              nobodies: n.length as number,
+              stringers: s.length as number,
+              villains: v.length as number
+            };
+          })
+        );
 
         // Add a nobody so that we have one
-        http.post('api/nobodies', { id: 42, name: 'Noman' }).pipe(
-        // Reset database with "clear" option
-          concatMap(() => http.post('commands/resetDb', { clear: true, returnType })),
-          // count all the collections
-          concatMap(() => sizes$)
-        ).subscribe(
-          sizes => {
+        http
+          .post('api/nobodies', { id: 42, name: 'Noman' })
+          .pipe(
+            // Reset database with "clear" option
+            concatMap(() => http.post('commands/resetDb', { clear: true, returnType })),
+            // count all the collections
+            concatMap(() => sizes$)
+          )
+          .subscribe(sizes => {
             expect(sizes.heroes).toBe(0, 'reset should have cleared the heroes');
             expect(sizes.nobodies).toBe(0, 'reset should have cleared the nobodies');
             expect(sizes.stringers).toBe(0, 'reset should have cleared the stringers');
             expect(sizes.villains).toBeGreaterThan(0, 'reset should NOT clear villains');
-          },
-          failure
-        );
+          }, failure);
       }
     });
   });
@@ -473,18 +407,14 @@ describe('HttpClient Backend Service', () => {
   ////////////////
 
   describe('HttpClient HeroService', () => {
-
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [
           HttpClientModule,
           HttpClientInMemoryWebApiModule.forRoot(HeroInMemDataService, { delay })
         ],
-        providers: [
-          { provide: HeroService, useClass: HttpClientHeroService }
-        ]
+        providers: [{ provide: HeroService, useClass: HttpClientHeroService }]
       });
-
     });
 
     new HeroServiceCoreSpec().run();
@@ -493,7 +423,6 @@ describe('HttpClient Backend Service', () => {
   ///////////////
 
   describe('HttpClient interceptor', () => {
-
     let http: HttpClient;
     let interceptors: HttpInterceptor[];
     let httpBackend: HttpClientBackendService;
@@ -524,44 +453,38 @@ describe('HttpClient Backend Service', () => {
     it('should have GET request header from test interceptor', async(() => {
       const handle = spyOn(httpBackend, 'handle').and.callThrough();
 
-      http.get<Hero[]>('api/heroes')
-        .subscribe(
-          heroes => {
-            // HttpRequest is first arg of the first call to in-mem backend `handle`
-            const req: HttpRequest<Hero[]> = handle.calls.argsFor(0)[0];
-            const reqHeader = req.headers.get('x-test-req');
-            expect(reqHeader).toBe('req-test-header');
+      http.get<Hero[]>('api/heroes').subscribe(heroes => {
+        // HttpRequest is first arg of the first call to in-mem backend `handle`
+        const req: HttpRequest<Hero[]> = handle.calls.argsFor(0)[0];
+        const reqHeader = req.headers.get('x-test-req');
+        expect(reqHeader).toBe('req-test-header');
 
-            expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-          },
-          failure
-        );
+        expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+      }, failure);
     }));
 
     it('should have GET response header from test interceptor', async(() => {
       let gotResponse = false;
       const req = new HttpRequest<any>('GET', 'api/heroes');
-      http.request<Hero[]>(req)
-        .subscribe(
-          event => {
-            if (event.type === HttpEventType.Response) {
-              gotResponse = true;
+      http.request<Hero[]>(req).subscribe(
+        event => {
+          if (event.type === HttpEventType.Response) {
+            gotResponse = true;
 
-              const resHeader = event.headers.get('x-test-res');
-              expect(resHeader).toBe('res-test-header');
+            const resHeader = event.headers.get('x-test-res');
+            expect(resHeader).toBe('res-test-header');
 
-              const heroes = event.body as Hero[];
-              expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-            }
-          },
-          failure,
-          () => expect(gotResponse).toBe(true, 'should have seen Response event')
-        );
+            const heroes = event.body as Hero[];
+            expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+          }
+        },
+        failure,
+        () => expect(gotResponse).toBe(true, 'should have seen Response event')
+      );
     }));
   });
 
   //////////////
-
 
   ////////////////
   describe('HttpClient passThru', () => {
@@ -573,7 +496,10 @@ describe('HttpClient Backend Service', () => {
       TestBed.configureTestingModule({
         imports: [
           HttpClientModule,
-          HttpClientInMemoryWebApiModule.forRoot(HeroInMemDataService, { delay, passThruUnknownUrl: true })
+          HttpClientInMemoryWebApiModule.forRoot(HeroInMemDataService, {
+            delay,
+            passThruUnknownUrl: true
+          })
         ]
       });
 
@@ -591,52 +517,40 @@ describe('HttpClient Backend Service', () => {
     });
 
     it('can get heroes (no passthru)', async(() => {
-      http.get<Hero[]>('api/heroes')
-        .subscribe(
-          heroes => {
-            expect(createPassThruBackend).not.toHaveBeenCalled();
-            expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-          },
-          failure
-        );
+      http.get<Hero[]>('api/heroes').subscribe(heroes => {
+        expect(createPassThruBackend).not.toHaveBeenCalled();
+        expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+      }, failure);
     }));
 
     // `passthru` is NOT a collection in the data store
     // so requests for it should pass thru to the "real" server
 
     it('can GET passthru', async(() => {
-
       jasmine.Ajax.stubRequest('api/passthru').andReturn({
-        'status': 200,
-        'contentType': 'application/json',
-        'response': JSON.stringify([{ id: 42, name: 'Dude' }])
+        status: 200,
+        contentType: 'application/json',
+        response: JSON.stringify([{ id: 42, name: 'Dude' }])
       });
 
-      http.get<any[]>('api/passthru')
-        .subscribe(
-          passthru => {
-            console.log('GET passthru data', passthru);
-            expect(passthru.length).toBeGreaterThan(0, 'should have passthru data');
-          },
-          failure
-        );
+      http.get<any[]>('api/passthru').subscribe(passthru => {
+        console.log('GET passthru data', passthru);
+        expect(passthru.length).toBeGreaterThan(0, 'should have passthru data');
+      }, failure);
     }));
 
     it('can ADD to passthru', async(() => {
       jasmine.Ajax.stubRequest('api/passthru').andReturn({
-        'status': 200,
-        'contentType': 'application/json',
-        'response': JSON.stringify({ id: 42, name: 'Dude' })
+        status: 200,
+        contentType: 'application/json',
+        response: JSON.stringify({ id: 42, name: 'Dude' })
       });
 
-      http.post<any>('api/passthru', { name: 'Dude' })
-        .subscribe(
-          passthru => {
-            console.log('POST passthru data', passthru);
-            expect(passthru).toBeDefined('should have passthru data');
-            expect(passthru.id).toBe(42, 'passthru object should have id 42');          },
-          failure
-        );
+      http.post<any>('api/passthru', { name: 'Dude' }).subscribe(passthru => {
+        console.log('POST passthru data', passthru);
+        expect(passthru).toBeDefined('should have passthru data');
+        expect(passthru.id).toBe(42, 'passthru object should have id 42');
+      }, failure);
     }));
   });
 
@@ -648,7 +562,10 @@ describe('HttpClient Backend Service', () => {
       TestBed.configureTestingModule({
         imports: [
           HttpClientModule,
-          HttpClientInMemoryWebApiModule.forRoot(HeroInMemDataService, { delay, dataEncapsulation: true })
+          HttpClientInMemoryWebApiModule.forRoot(HeroInMemDataService, {
+            delay,
+            dataEncapsulation: true
+          })
         ]
       });
 
@@ -656,16 +573,14 @@ describe('HttpClient Backend Service', () => {
     });
 
     it('can get heroes (encapsulated)', async(() => {
-      http.get<Data>('api/heroes').pipe(
-        map(data => data.data as Hero[]) // unwrap data object
-      ).subscribe(
-        heroes => {
+      http
+        .get<Data>('api/heroes')
+        .pipe(
+          map(data => data.data as Hero[]) // unwrap data object
+        )
+        .subscribe(heroes => {
           expect(heroes.length).toBeGreaterThan(0, 'should have data.heroes');
-        },
-        failure
-      );
+        }, failure);
     }));
-
   });
 });
-

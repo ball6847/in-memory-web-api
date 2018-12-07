@@ -1,24 +1,23 @@
-import { Injectable }from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams }from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 
-import { Hero }        from './hero';
+import { Hero } from './hero';
 import { HeroService } from './hero.service';
 
-const cudOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' })};
+const cudOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
 @Injectable()
 export class HttpClientHeroService extends HeroService {
-
-  constructor (private http: HttpClient) {
+  constructor(private http: HttpClient) {
     super();
   }
 
-  getHeroes (): Observable<Hero[]> {
+  getHeroes(): Observable<Hero[]> {
     return this.http.get<Hero[]>(this.heroesUrl).pipe(
-   // tap(data => console.log(data)), // eyeball results in the console
+      // tap(data => console.log(data)), // eyeball results in the console
       catchError(this.handleError)
     );
   }
@@ -26,9 +25,7 @@ export class HttpClientHeroService extends HeroService {
   // This get-by-id will 404 when id not found
   getHero(id: number): Observable<Hero> {
     const url = `${this.heroesUrl}/${id}`;
-    return this.http.get<Hero>(url).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.get<Hero>(url).pipe(catchError(this.handleError));
   }
 
   // This get-by-id does not 404; returns undefined when id not found
@@ -39,41 +36,34 @@ export class HttpClientHeroService extends HeroService {
   //     .catch(this.handleError);
   // }
 
-  addHero (name: string): Observable<Hero> {
+  addHero(name: string): Observable<Hero> {
     const hero = { name };
 
-    return this.http.post<Hero>(this.heroesUrl, hero, cudOptions).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<Hero>(this.heroesUrl, hero, cudOptions)
+      .pipe(catchError(this.handleError));
   }
 
-  deleteHero (hero: Hero | number): Observable<Hero> {
+  deleteHero(hero: Hero | number): Observable<Hero> {
     const id = typeof hero === 'number' ? hero : hero.id;
     const url = `${this.heroesUrl}/${id}`;
 
-    return this.http.delete<Hero>(url, cudOptions).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.delete<Hero>(url, cudOptions).pipe(catchError(this.handleError));
   }
 
   searchHeroes(term: string): Observable<Hero[]> {
     term = term.trim();
     // add safe, encoded search parameter if term is present
-    const options = term ?
-      { params: new HttpParams().set('name', term) } : {};
+    const options = term ? { params: new HttpParams().set('name', term) } : {};
 
-    return this.http.get<Hero[]>(this.heroesUrl, options).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.get<Hero[]>(this.heroesUrl, options).pipe(catchError(this.handleError));
   }
 
-  updateHero (hero: Hero): Observable<null | Hero> {
-    return this.http.put<Hero>(this.heroesUrl, hero, cudOptions).pipe(
-      catchError(this.handleError)
-    );
+  updateHero(hero: Hero): Observable<null | Hero> {
+    return this.http.put<Hero>(this.heroesUrl, hero, cudOptions).pipe(catchError(this.handleError));
   }
 
-  private handleError (error: any) {
+  private handleError(error: any) {
     // In a real world app, we might send the error to remote logging infrastructure
     // and reformat for user consumption
     console.error(error); // log to console instead

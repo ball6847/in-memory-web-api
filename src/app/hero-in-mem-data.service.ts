@@ -12,14 +12,13 @@ import { Injectable } from '@angular/core';
 import { InMemoryDbService, RequestInfo } from '../in-mem/interfaces';
 
 // tslint:disable:no-unused-variable
-import { Observable, of }  from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 // tslint:enable:no-unused-variable
 
 @Injectable()
 export class HeroInMemDataService implements InMemoryDbService {
   createDb(reqInfo?: RequestInfo) {
-
     const heroes = [
       { id: 1, name: 'Windstorm' },
       { id: 2, name: 'Bombasto' },
@@ -27,16 +26,13 @@ export class HeroInMemDataService implements InMemoryDbService {
       { id: 4, name: 'Tornado' }
     ];
 
-    const nobodies: any[] = [ ];
+    const nobodies: any[] = [];
 
     // entities with string ids that look like numbers
-    const stringers = [
-      { id: '10', name: 'Bob String'},
-      { id: '20', name: 'Jill String'}
-    ];
+    const stringers = [{ id: '10', name: 'Bob String' }, { id: '20', name: 'Jill String' }];
 
     // default returnType
-    let returnType  = 'object';
+    let returnType = 'object';
     // let returnType  = 'observable';
     // let returnType  = 'promise';
 
@@ -56,9 +52,9 @@ export class HeroInMemDataService implements InMemoryDbService {
     const db = { heroes, nobodies, stringers };
 
     switch (returnType) {
-      case ('observable'):
+      case 'observable':
         return of(db).pipe(delay(10));
-      case ('promise'):
+      case 'promise':
         return new Promise(resolve => {
           setTimeout(() => resolve(db), 10);
         });

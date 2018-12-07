@@ -1,12 +1,20 @@
 import { Inject, Injectable, Injector, Optional } from '@angular/core';
 
-import { BrowserXhr, Connection, ConnectionBackend,
-         Headers, ReadyState, Request, RequestMethod,
-         Response,
-         ResponseOptions as HttpResponseOptions,
-         ResponseOptionsArgs,
-         URLSearchParams,
-         XHRBackend, XSRFStrategy } from '@angular/http';
+import {
+  BrowserXhr,
+  Connection,
+  ConnectionBackend,
+  Headers,
+  ReadyState,
+  Request,
+  RequestMethod,
+  Response,
+  ResponseOptions as HttpResponseOptions,
+  ResponseOptionsArgs,
+  URLSearchParams,
+  XHRBackend,
+  XSRFStrategy
+} from '@angular/http';
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -51,12 +59,11 @@ import { BackendService } from './backend.service';
  */
 @Injectable()
 export class HttpBackendService extends BackendService implements ConnectionBackend {
-
   constructor(
     private injector: Injector,
     inMemDbService: InMemoryDbService,
     @Inject(InMemoryBackendConfig) @Optional() config: InMemoryBackendConfigArgs
-    ) {
+  ) {
     super(inMemDbService, config);
   }
 
@@ -64,10 +71,13 @@ export class HttpBackendService extends BackendService implements ConnectionBack
     let response: Observable<Response>;
     try {
       response = this.handleRequest(req);
-
     } catch (error) {
       const err = error.message || error;
-      const resOptions = this.createErrorResponseOptions(req.url, STATUS.INTERNAL_SERVER_ERROR, `${err}`);
+      const resOptions = this.createErrorResponseOptions(
+        req.url,
+        STATUS.INTERNAL_SERVER_ERROR,
+        `${err}`
+      );
       response = this.createResponse$(() => resOptions);
     }
 
@@ -93,7 +103,7 @@ export class HttpBackendService extends BackendService implements ConnectionBack
     return RequestMethod[req.method || 0].toLowerCase();
   }
 
-  protected createHeaders(headers: { [index: string]: string; }): Headers {
+  protected createHeaders(headers: { [index: string]: string }): Headers {
     return new Headers(headers);
   }
 
@@ -101,10 +111,14 @@ export class HttpBackendService extends BackendService implements ConnectionBack
     return search ? new URLSearchParams(search).paramsMap : new Map<string, string[]>();
   }
 
-  protected createResponse$fromResponseOptions$(resOptions$: Observable<ResponseOptions>): Observable<Response> {
-    return resOptions$.pipe(map((opts: ResponseOptionsArgs) => {
-      return new Response(new HttpResponseOptions(opts));
-    }));
+  protected createResponse$fromResponseOptions$(
+    resOptions$: Observable<ResponseOptions>
+  ): Observable<Response> {
+    return resOptions$.pipe(
+      map((opts: ResponseOptionsArgs) => {
+        return new Response(new HttpResponseOptions(opts));
+      })
+    );
   }
 
   protected createPassThruBackend() {
@@ -118,7 +132,6 @@ export class HttpBackendService extends BackendService implements ConnectionBack
       return {
         handle: (req: Request) => xhrBackend.createConnection(req).response
       };
-
     } catch (e) {
       e.message = 'Cannot create passThru404 backend; ' + (e.message || '');
       throw e;

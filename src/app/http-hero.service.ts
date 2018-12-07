@@ -1,24 +1,23 @@
-import { Injectable }from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
 
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 
-import { Hero }        from './hero';
+import { Hero } from './hero';
 import { HeroService } from './hero.service';
 
-const cudOptions = { headers: new Headers({ 'Content-Type': 'application/json' })};
+const cudOptions = { headers: new Headers({ 'Content-Type': 'application/json' }) };
 
 @Injectable()
 export class HttpHeroService extends HeroService {
-
-  constructor (private http: Http) {
+  constructor(private http: Http) {
     super();
   }
 
-  getHeroes (): Observable<Hero[]> {
+  getHeroes(): Observable<Hero[]> {
     return this.http.get(this.heroesUrl).pipe(
-   // tap(data => console.log(data)), // eyeball results in the console
+      // tap(data => console.log(data)), // eyeball results in the console
       map(res => res.json()),
       catchError(this.handleError)
     );
@@ -42,7 +41,7 @@ export class HttpHeroService extends HeroService {
   //     .catch(this.handleError);
   // }
 
-  addHero (name: string): Observable<Hero> {
+  addHero(name: string): Observable<Hero> {
     const hero = { name };
 
     return this.http.post(this.heroesUrl, hero, cudOptions).pipe(
@@ -51,16 +50,15 @@ export class HttpHeroService extends HeroService {
     );
   }
 
-  deleteHero (hero: Hero | number): Observable<Hero> {
+  deleteHero(hero: Hero | number): Observable<Hero> {
     const id = typeof hero === 'number' ? hero : hero.id;
     const url = `${this.heroesUrl}/${id}`;
 
     return this.http.delete(url, cudOptions).pipe(
-      map(_ => (_ as any as Hero)), // TODO: this is wrong, but I don't know what the right thing is
+      map(_ => (_ as any) as Hero), // TODO: this is wrong, but I don't know what the right thing is
       catchError(this.handleError)
     );
   }
-
 
   searchHeroes(term: string): Observable<Hero[]> {
     term = term.trim();
@@ -72,14 +70,14 @@ export class HttpHeroService extends HeroService {
     );
   }
 
-  updateHero (hero: Hero): Observable<null | Hero> {
+  updateHero(hero: Hero): Observable<null | Hero> {
     return this.http.put(this.heroesUrl, hero, cudOptions).pipe(
       map(res => res.json()),
       catchError(this.handleError)
     );
   }
 
-  private handleError (error: any) {
+  private handleError(error: any) {
     // In a real world app, we might send the error to remote logging infrastructure
     // and reformat for user consumption
     console.error(error); // log to console instead
